@@ -14,11 +14,9 @@ export function Input({ label, error, icon: Icon, className = "", type = "text",
                 )}
                 <input
                     type={type}
-                    className={`w-full bg-white border ${
-                        error ? "border-red-500 focus:ring-red-500" : "border-slate-300 focus:border-orange-600 focus:ring-orange-600"
-                    } rounded-xl text-slate-900 placeholder-slate-400 text-sm ${
-                        Icon ? "pl-10" : "pl-3.5"
-                    } pr-3.5 py-2.5 transition duration-150 focus:outline-none focus:ring-1 ${className}`}
+                    className={`w-full bg-white border ${error ? "border-red-500 focus:ring-red-500" : "border-slate-300 focus:border-orange-600 focus:ring-orange-600"
+                        } rounded-xl text-slate-900 placeholder-slate-400 text-sm ${Icon ? "pl-10" : "pl-3.5"
+                        } pr-3.5 py-2.5 transition duration-150 focus:outline-none focus:ring-1 ${className}`}
                     {...props}
                 />
             </div>

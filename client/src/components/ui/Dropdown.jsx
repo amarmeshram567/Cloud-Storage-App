@@ -38,9 +38,8 @@ export function DropdownItem({ children, icon: Icon, onClick, danger = false, di
             type="button"
             disabled={disabled}
             onClick={onClick}
-            className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 transition ${
-                danger ? "text-red-600 hover:bg-red-50 hover:text-red-700" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 transition ${danger ? "text-red-600 hover:bg-red-50 hover:text-red-700" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
             {Icon && <Icon className="size-4 shrink-0" />}
             <span>{children}</span>
