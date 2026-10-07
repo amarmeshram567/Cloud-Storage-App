@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import CreateFolderModal from '../folders/CreateFolderModal';
 
 const DashboardLayout = () => {
 
@@ -30,6 +31,12 @@ const DashboardLayout = () => {
                     <Outlet />
                 </main>
             </div>
+
+            {/* Create folder modal */}
+            <CreateFolderModal
+                isOpen={isCreateFolderOpen}
+                onClose={() => setIsCreateFolderOpen(false)}
+            />
         </div>
     );
 }

@@ -22,7 +22,7 @@ const FilePreview = ({ file, onClose }) => {
                 if (isMounted) setPreviewUrl(data.preview_url)
             })
             .catch((err) => {
-                if (isMounted) setError(err.response?.data?.error || "Failed to load preview")
+                if (isMounted) setError(err.response?.data?.error || "Failed to load file preview")
             })
             .finally(() => {
                 if (isMounted) setIsLoading(false)
