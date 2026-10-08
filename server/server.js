@@ -3,6 +3,7 @@ import "dotenv/config"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import { initDB } from "./config/db.js"
+import authRouter from "./routes/authRoutes.js"
 
 
 const app = express()
@@ -20,6 +21,11 @@ app.get("/", (req, res) => {
     res.send("API IS WORKING")
 })
 
+// app api routes
+app.use("/api/auth", authRouter)
+
+
+
 // error handling middleware
 app.use((err, _req, res, _next) => {
     res.status(err.status || 500).json({ error: err.message || "Something went wrong!" })
@@ -34,5 +40,3 @@ initDB().then(() => {
     })
 })
 
-
-// 
