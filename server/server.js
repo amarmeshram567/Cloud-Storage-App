@@ -13,7 +13,7 @@ import shareRouter from "./routes/shareRoutes.js"
 const app = express()
 
 // cors configuration
-const allowOrigins = (process.env.ORIGINS || "http://localhost:5173")
+const allowOrigins = (process.env.ORIGINS || "https://cloud-storage-app-rust.vercel.app")
     .split(",")
     .map((origin) => origin.trim())
 app.use(cors({ origin: allowOrigins, credentials: true }))
@@ -26,6 +26,7 @@ app.use(express.json({ limit: "100mb" }))
 app.get("/", (req, res) => {
     res.send("API IS WORKING")
 })
+
 
 // app api routes
 app.use("/api/auth", authRouter)
