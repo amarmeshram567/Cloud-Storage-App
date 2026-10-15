@@ -9,9 +9,15 @@ export const protect = async (req, res, next) => {
         return res.status(401).json({ error: "Unauthorized. Please log in" })
     }
 
+    let decoded;
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const user = await sql`
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch {
+        return res.status(401).json({ error: "Token invalid or expired. Please log in again." })
+    }
+
+    try {
+        const [user] = await sql`
         SELECT id, name, email, storage_used, storage_limit, created_at, updated_at 
         FROM users WHERE id = ${decoded.id}`;
 
@@ -20,11 +26,10 @@ export const protect = async (req, res, next) => {
                 error: "User no longer exists."
             })
         }
-
         req.user = user;
-        next()
-
-    } catch {
-        return res.status(401).json({ error: "Token invalid or expired. Please log in again." })
+        req.user = user;
+        return next()
+    } catch (error) {
+        return next(error)
     }
 }

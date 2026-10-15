@@ -8,6 +8,7 @@ import FilePreview from '../components/files/FilePreview';
 import ShareModal from '../components/files/ShareModal';
 import RenameModal from '../components/files/RenameModal';
 import MoveModal from '../components/files/MoveModal';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 
 const Drive = () => {
 

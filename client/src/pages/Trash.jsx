@@ -75,7 +75,7 @@ const Trash = () => {
         fetchTrash()
     }, [])
 
-    const handleAction = async ({ actionfn, item, isFolder }) => {
+    const handleAction = async (actionfn, item, isFolder) => {
         const ok = await actionfn({ id: item.id, item_type: isFolder ? "folder" : "file" })
         if (ok) {
             setTrash((prev) => (

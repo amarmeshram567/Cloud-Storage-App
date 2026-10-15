@@ -52,11 +52,11 @@ const ShareModal = ({ item, isOpen, onClose }) => {
     const copyToClipboard = async () => {
         if (!generatedLink) return
         try {
-            navigator.clipboard.writeText(generatedLink)
+            await navigator.clipboard.writeText(generatedLink)
             setCopied(true)
             toast.success("Link copied to clipboard!")
             setTimeout(() => setCopied(false), 2000)
-        } catch (error) {
+        } catch {
             toast.error("Error copying link to clipboard")
         }
     }

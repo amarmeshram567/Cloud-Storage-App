@@ -4,7 +4,7 @@ import api from "../config/api";
 
 
 
-const isFolderItem = (item) => item?.type === "folder" || (!item?.mime_type && item?.path !== undefined)
+const isFolderItem = (item) => item?.item_type === "folder" || item?.type === "folder" || (!item?.mime_type && item?.path !== undefined)
 
 export function useDrive() {
     const {
@@ -17,17 +17,18 @@ export function useDrive() {
         setUploadProgress
     } = useApp()
 
-    // Reusable api action runner with standard toast & callback
-    const runAction = async (apiCall, successMessage, errorMessage, afterSuccess) => {
+    // Reusable API action runner with standard toast & callback
+    const runAction = async (request, successMessage, errorMessage, afterSuccess) => {
         try {
-            const res = await apiCall()
+            const res = await request
             if (successMessage) toast.success(successMessage)
             if (afterSuccess) await afterSuccess(res?.data)
 
             return true
 
         } catch (error) {
-            toast.error(error?.response?.data?.message || errorMessage || "An error occurred")
+            toast.error(error?.response?.data?.error || error?.response?.data?.message || errorMessage || "An error occurred")
+            return false
         }
     }
 
@@ -64,7 +65,7 @@ export function useDrive() {
             await refreshUser() // Refresh user data to update storage usage
         } catch (error) {
             clearInterval(interval)
-            toast.error(error?.response?.data?.message || "An error occurred")
+            toast.error(error?.response?.data?.error || error?.response?.data?.message || "An error occurred")
         }
         finally {
             clearInterval(interval)
@@ -89,7 +90,7 @@ export function useDrive() {
         const endPoint = isFolder ? "folders" : "files";
         const id = item.id || item
         return runAction(
-            api.path(`/api/${endPoint}/${id}/rename`, { name: newName }),
+            api.patch(`/api/${endPoint}/${id}/rename`, { name: newName }),
             `${isFolder ? "Folder" : "File"} renamed successfully`, "Error renaming item", () => fetchDriveContent()
         )
     }
@@ -97,7 +98,7 @@ export function useDrive() {
     const moveItem = (item, targetFolderId) => {
         const isFolder = isFolderItem(item)
         const endPoint = isFolder ? "folders" : "files";
-        const payload = isFolder ? { target_parent: targetFolderId } : { targe_folder: targetFolderId }
+        const payload = isFolder ? { target_parent: targetFolderId } : { target_folder: targetFolderId }
         const id = item.id || item
         return runAction(
             api.patch(`/api/${endPoint}/${id}/move`, payload),
@@ -149,4 +150,3 @@ export function useDrive() {
         uploadProgress
     }
 }
-

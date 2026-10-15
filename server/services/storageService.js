@@ -128,9 +128,15 @@ export const emptyTrashHierarchy = async (ownerId) => {
     const trashedFileIds = trashedFiles.map((f) => f.id);
     const trashedFolderIds = trashedFolders.map((f) => f.id);
 
-    await Promise.all([s3Keys.length > 0 ? deleteMultipleFromStorage(s3Keys) : Promise.resolve(),
-    cleanupShareLinks(trashedFileIds, trashedFolderIds),
-    sql`DELETE FROM files WHERE owner_id = ${ownerId} AND is_trashed = true`]);
+    await Promise.all([
+        s3Keys.length > 0 ? deleteMultipleFromStorage(s3Keys) : Promise.resolve(),
+        cleanupShareLinks(trashedFileIds, trashedFolderIds),
+        sql`DELETE FROM files WHERE owner_id = ${ownerId} AND is_trashed = true`
+    ]);
+
+    if (trashedFolderIds.length > 0) {
+        await sql`DELETE FROM folders WHERE id = ANY(${trashedFolderIds}::uuid[]) AND owner_id = ${ownerId}`
+    }
 
     if (totalFreedBytes > 0) {
         await adjustUserStorage(ownerId, -totalFreedBytes);

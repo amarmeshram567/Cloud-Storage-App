@@ -28,7 +28,9 @@ export const sendTokenResponse = (res, userId, statusCode = 200, extraData = {})
 export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        if (!name.trim(), !email.trim(), !password) {
+        if (typeof name !== "string" || !name.trim()
+            || typeof email !== "string" || !email.trim()
+            || typeof password !== "string" || !password) {
             return res.status(400).json({ error: "Name, email, and password are required." })
         }
 
@@ -40,7 +42,7 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ error: "User with this email already exists." })
         }
 
-        const salt = await bcrypt.getSalt(10)
+        const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
         const storageLimit = Number(process.env.MAX_STORAGE_PER_USER || 1073741824)
@@ -64,7 +66,8 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email.trim() || !password) {
+        if (typeof email !== "string" || !email.trim()
+            || typeof password !== "string" || !password) {
             return res.status(400).json({ error: "email, and password are required." })
         }
 
@@ -122,4 +125,3 @@ export const getMe = async (req, res) => {
         return res.status(500).json({ error: error.message })
     }
 }
-

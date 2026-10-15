@@ -13,7 +13,9 @@ import shareRouter from "./routes/shareRoutes.js"
 const app = express()
 
 // cors configuration
-const allowOrigins = process.env.ORIGINS.split(",")
+const allowOrigins = (process.env.ORIGINS || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
 app.use(cors({ origin: allowOrigins, credentials: true }))
 
 // middleware
@@ -47,4 +49,3 @@ initDB().then(() => {
         console.log(`Server running at http://localhost:${port}`)
     })
 })
-

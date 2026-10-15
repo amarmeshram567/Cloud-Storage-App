@@ -56,7 +56,7 @@ export const uploadFiles = async (req, res) => {
                 await uploadToStorage(multerFile.buffer, s3Key, multerFile.mimetype);
 
                 const [row] = await sql`
-                INSERT INTO (name, original_name, mime_type, size, s3_key, folder_id, owner_id)
+                INSERT INTO files (name, original_name, mime_type, size, s3_key, folder_id, owner_id)
                 VALUES (${multerFile.originalname}, ${multerFile.originalname}, ${multerFile.mimetype}, ${multerFile.size}, ${s3Key}, ${targetFolderId}, ${req.user.id})
                 RETURNING *
                 `;
@@ -82,12 +82,12 @@ export const getFiles = async (req, res) => {
         const { folder, folder_id, search, sort = "name_asc", page = 1, limit = 50 } = req.query;
 
         const pageNum = Math.max(1, parseInt(page, 10) || 1);
-        const limitNum = Math.max(1, parseInt(limit, 10) || 50);
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
         const offset = (pageNum - 1) * limitNum;
-        const orderby = SORT_MAP[sort] || SORT_MAP.name_asc
+        const targetSort = Object.hasOwn(SORT_MAP, sort) ? sort : "name_asc"
 
         const targetFolder = folder_id ?? folder;
-        const targetFolderId = !targetFolder || targetFolder === "null" || "root" ? null : targetFolder;
+        const targetFolderId = !targetFolder || targetFolder === "null" || targetFolder === "root" ? null : targetFolder;
 
         const isSearch = Boolean(search?.trim());
         const pattern = `%${search?.trim()}%`;
@@ -96,16 +96,23 @@ export const getFiles = async (req, res) => {
             sql`
             SELECT * FROM files 
             WHERE owner_id = ${req.user.id} AND is_trashed = false 
-            AND (${isSearch}::boolean = true  AND ILIKE ${pattern} OR ${isSearch}::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
-            ORDER BY ${sql.unsafe(orderby)}
+            AND (${isSearch}::boolean = true AND name ILIKE ${pattern}
+                OR ${isSearch}::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
+            ORDER BY
+                CASE WHEN ${targetSort} = 'name_asc' THEN name END ASC,
+                CASE WHEN ${targetSort} = 'name_desc' THEN name END DESC,
+                CASE WHEN ${targetSort} = 'date_asc' THEN created_at END ASC,
+                CASE WHEN ${targetSort} = 'date_desc' THEN created_at END DESC,
+                CASE WHEN ${targetSort} = 'size_asc' THEN size END ASC,
+                CASE WHEN ${targetSort} = 'size_desc' THEN size END DESC
             LIMIT ${limitNum} OFFSET ${offset}
             `,
 
             sql`
-            SELECT COUNT(*)::int AS total FROM var fs = require('fs');
+            SELECT COUNT(*)::int AS total FROM files
             WHERE owner_id = ${req.user.id} AND is_trashed = false
-            AND (${isSearch}::boolean = true  AND name ILIKE ${pattern} OR ${isSearch}
-            ::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
+            AND (${isSearch}::boolean = true AND name ILIKE ${pattern}
+                OR ${isSearch}::boolean = false AND folder_id IS NOT DISTINCT FROM ${targetFolderId})
             `
         ])
 

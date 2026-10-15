@@ -14,7 +14,7 @@ const getErrMsg = (err, fallback) => err.response?.data?.error || fallback;
 export const AppProvider = ({ children }) => {
 
     const [user, setUser] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     // upload global state 
     const [isUploading, setIsUploading] = useState(false)
@@ -38,7 +38,7 @@ export const AppProvider = ({ children }) => {
             const { data } = await api.get("/api/auth/me")
             setUser(data.user)
             return true
-        } catch (err) {
+        } catch {
             setUser(null)
             return false
         }
@@ -57,7 +57,7 @@ export const AppProvider = ({ children }) => {
             setUser(data.user)
             if (successMsg) toast.success(successMsg)
             return true
-        } catch (err) {
+        } catch {
             toast.error(getErrMsg(err, errorFallback))
             return false
         }
@@ -75,34 +75,32 @@ export const AppProvider = ({ children }) => {
         try {
             await api.post("/api/auth/logout")
             setUser(null)
-            toast.success("Logout out")
+            toast.success("Logged out")
         } catch (err) {
             toast.error("Logout error")
         }
     }
 
 
-    const fetchDriveContent = useCallback(() => {
-        async (folderId = currentFolderId, search = searchQuery, sort = sortBy) => {
-            if (!user) return;
-            setIsDriveLoading(true)
-            try {
-                const parentParam = folderId || 'null'
-                const [folderRes, fileRes, detailRes] = await Promise.all([
-                    api.get("/api/folders", { params: { parent_id: parentParam } }),
-                    api.get("/api/files", { params: { folder_id: parentParam, search, sort } }),
-                    folderId ? api.get(`/api/folders/${folderId}`) : null
-                ])
+    const fetchDriveContent = useCallback(async (folderId = currentFolderId, search = searchQuery, sort = sortBy) => {
+        if (!user) return;
+        setIsDriveLoading(true)
+        try {
+            const parentParam = folderId || 'null'
+            const [folderRes, fileRes, detailRes] = await Promise.all([
+                api.get("/api/folders", { params: { parent_id: parentParam } }),
+                api.get("/api/files", { params: { folder_id: parentParam, search, sort } }),
+                folderId ? api.get(`/api/folders/${folderId}`) : null
+            ])
 
-                setFolders(folderRes.data.folders)
-                setFiles(fileRes.data.files)
-                setBreadcrumbs(detailRes?.data?.breadcrumbs || ROOT_BREADCRUMB)
-            } catch {
-                toast.error("Error loading drive content")
-            }
-            finally {
-                setIsDriveLoading(false)
-            }
+            setFolders(folderRes.data.folders)
+            setFiles(fileRes.data.files)
+            setBreadcrumbs(detailRes?.data?.breadcrumbs || ROOT_BREADCRUMB)
+        } catch {
+            toast.error("Error loading drive content")
+        }
+        finally {
+            setIsDriveLoading(false)
         }
     }, [user, currentFolderId, searchQuery, sortBy])
 
@@ -116,7 +114,7 @@ export const AppProvider = ({ children }) => {
         currentFolderId, setCurrentFolderId, fetchDriveContent, breadcrumbs,
         folders, files, isDriveLoading,
         searchQuery, setSearchQuery, sortBy, setSortBy,
-        refreshUser, setFolders, folders, files, setFiles
+        refreshUser, setFolders, setFiles
 
     }
 

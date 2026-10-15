@@ -27,7 +27,7 @@ export const createShareLink = async (req, res) => {
         // check for an exiting share link for this resource
         const [existing] = await sql`
         SELECT * FROM share_links
-        WHERE resource_id = ${resource.id} AND owner_id = ${req.user.id}
+        WHERE resource_type = ${resourceType} AND resource_id = ${resource.id} AND owner_id = ${req.user.id}
         `
 
         // if expired, remove it
@@ -61,11 +61,12 @@ export const getShareLinks = async (req, res) => {
         SELECT sl.*,
         CASE
             WHEN sl.resource_type = 'file' THEN json_build_object('id', f.id, 'name', f.name, 'mime_type', f.mime_type, 'size', f.size)
-            WHEN sl.resource_type = 'folder THEN json_build_object('id',fo..id, 'name', fo.name)
+            WHEN sl.resource_type = 'folder' THEN json_build_object('id', fo.id, 'name', fo.name)
         END AS resource
         FROM share_links sl
+        LEFT JOIN files f ON sl.resource_type = 'file' AND f.id = sl.resource_id AND f.is_trashed = false
         LEFT JOIN folders pf ON f.folder_id = pf.id
-        LEFT JOIN files fo ON sl.resource_type = 'folder' AND fo.id = sl.resource_id AND fo.is_trashed = false
+        LEFT JOIN folders fo ON sl.resource_type = 'folder' AND fo.id = sl.resource_id AND fo.is_trashed = false
         WHERE sl.owner_id = ${req.user.id}
         AND (
         (sl.resource_type = 'file' AND f.id IS NOT NULL AND (f.folder_id IS NULL OR pf.is_trashed = false))

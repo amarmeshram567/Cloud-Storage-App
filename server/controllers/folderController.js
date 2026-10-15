@@ -23,7 +23,7 @@ export const createFolder = async (req, res) => {
             if (!parentFolder) {
                 return res.status(401).json({ error: "Parent folder not found." })
             }
-            folderPath = [...createFolder(parentFolder.path || []), parentFolder.id]
+            folderPath = [...(parentFolder.path || []), parentFolder.id]
         }
 
         // check duplicate folder in same directory

@@ -19,7 +19,7 @@ const FilePreview = ({ file, onClose }) => {
 
         api.get(`/api/files/${file.id}/preview`)
             .then(({ data }) => {
-                if (isMounted) setPreviewUrl(data.preview_url)
+                if (isMounted) setPreviewUrl(data.url)
             })
             .catch((err) => {
                 if (isMounted) setError(err.response?.data?.error || "Failed to load file preview")
@@ -36,7 +36,7 @@ const FilePreview = ({ file, onClose }) => {
 
     if (!file) return null;
 
-    const mime = file.meme_type || ""
+    const mime = file.mime_type || ""
 
     return (
         <div onClick={onClose} className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fade-in'>

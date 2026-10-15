@@ -9,7 +9,7 @@ const FileCard = ({ file, onPreview, onShare, onRename, onMove, onDelete }) => {
 
             <div className='flex items-start justify-between gap-2 mb-3'>
                 <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    {getFileIcon(file.mine_type, "size-6")}
+                    {getFileIcon(file.mime_type, "size-6")}
                 </div>
 
                 <ItemDropdown

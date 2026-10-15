@@ -8,7 +8,7 @@ import { formatBytes, getFileIcon } from '../assets/assets';
 
 const SharedWithMe = () => {
 
-    const token = useParams()
+    const { token } = useParams()
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [data, setData] = useState(null)
@@ -16,6 +16,7 @@ const SharedWithMe = () => {
     useEffect(() => {
         setIsLoading(true)
         api.get(`/api/shares/access/${token}`).then((res) => {
+            setError(null)
             setData(res.data)
         }).catch((err) => {
             setError(err.response?.data?.error || "Unable to load shared item.")
@@ -57,8 +58,8 @@ const SharedWithMe = () => {
                         </div>
                         <h3 className="">Link Unavailable</h3>
                         <p className="">{error}</p>
-                        <div to="/" className="p-2">
-                            <Link>
+                        <div className="p-2">
+                            <Link to="/">
                                 <Button variant="secondary" size="sm">
                                     Go to Homepage
                                 </Button>
@@ -115,14 +116,14 @@ const SharedWithMe = () => {
                                     {data.files.map((file) => (
                                         <div key={file.id} className="p-3.5 flex items-center justify-between hover:bg-slate-100/80 transition">
                                             <div className="flex items-center  gap-3 min-w-0 pr-3">
-                                                {getFileIcon(file.mine_type, "size-6 shrink-0")}
+                                                {getFileIcon(file.mime_type, "size-6 shrink-0")}
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-medium text-slate-800 truncate">{file.name}</p>
                                                     <p className="text-xs text-slate-500">{formatBytes(file.size)}</p>
                                                 </div>
                                             </div>
                                             {file.url && (
-                                                <a href="" download={file.name} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition shrink-0">
+                                                <a href={file.url} download={file.name} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition shrink-0">
                                                     <DownloadIcon className="size-3.5" />
                                                     <span className="">Download</span>
                                                 </a>

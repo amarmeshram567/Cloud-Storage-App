@@ -3,13 +3,11 @@ import { useApp } from '../../context/AppContext';
 import { Spinner } from '../ui/Spinner';
 import { EmptyState } from '../ui/EmptyState';
 import FolderCard from '../folders/FolderCard';
-import FileCard from './fileCard';
+import FileCard from './FileCard';
 
 const FileGrid = ({ onFolderClick, onPreviewFile, onShareItem, onRenameItem, onMoveItem, onDeleteItem }) => {
 
     const { folders, files, isDriveLoading } = useApp()
-
-    console.log("FileGrid render", { folders, files, isDriveLoading })
 
     if (isDriveLoading) {
         return (
