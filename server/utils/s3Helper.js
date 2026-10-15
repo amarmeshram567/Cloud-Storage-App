@@ -66,6 +66,7 @@ export const deleteFromStorage = async (key) => {
             }))
         } catch (fallbackErr) {
             console.error("[Storage Delete Error]:", fallbackErr.message)
+            throw fallbackErr
         }
     }
 }
