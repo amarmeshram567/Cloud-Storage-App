@@ -8,7 +8,7 @@ const AppContext = createContext()
 
 
 const ROOT_BREADCRUMB = [{ id: null, name: "My Drive" }]
-const getErrMsg = (err, fallback) => err.response?.data?.error || fallback;
+const getErrMsg = (error, fallback) => err.response?.data?.error || fallback;
 
 
 export const AppProvider = ({ children }) => {
@@ -58,7 +58,7 @@ export const AppProvider = ({ children }) => {
             if (successMsg) toast.success(successMsg)
             return true
         } catch {
-            toast.error(getErrMsg(err, errorFallback))
+            toast.error(getErrMsg(error, errorFallback))
             return false
         }
     }
@@ -76,7 +76,7 @@ export const AppProvider = ({ children }) => {
             await api.post("/api/auth/logout")
             setUser(null)
             toast.success("Logged out")
-        } catch (err) {
+        } catch (error) {
             toast.error("Logout error")
         }
     }
