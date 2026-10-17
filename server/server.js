@@ -27,7 +27,6 @@ app.get("/", (req, res) => {
     res.send("API IS WORKING")
 })
 
-
 // app api routes
 app.use("/api/auth", authRouter)
 app.use("/api/folders", folderRouter)
